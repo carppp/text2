@@ -442,6 +442,15 @@ namespace 試做版2
             }
         }
 
+        //list開關
+        private void list_Tick(object sender, EventArgs e)
+        {
+            if (panel1.Width < 240)
+            {
+                panel1.Width += 10;
+            }
+        }
+        
         private void pictureBox4_MouseLeave(object sender, EventArgs e)
         {
             if (b4 == false)
@@ -725,6 +734,7 @@ namespace 試做版2
                 //OHO凸 去你嬤嬤單引號
             }
         }
+
 
 
     }
