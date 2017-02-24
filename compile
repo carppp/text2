@@ -1,1 +1,731 @@
 
+using System;
+using System.Collections.Generic;
+using System.ComponentModel;
+using System.Data;
+using System.Drawing;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using System.Windows.Forms;
+using System.Data.OleDb;
+using System.Data.SqlClient;
+
+namespace 試做版2
+{
+    /*
+      while (thisReader1.Read())
+            {
+                Console.WriteLine("\t{0}\t{1}", thisReader1["姓名"], thisReader1["等級"]);
+                name[num] += thisReader1["姓名"].ToString();
+                level[num] += thisReader1["等級"].ToString();
+                num++;
+            }
+     */
+    public partial class compile : Form
+    {
+        public compile()
+        {
+            InitializeComponent();
+        }
+        string str1 = System.Windows.Forms.Application.StartupPath;//絕對位置
+        string[] name = new string[9999]; string[] level = new string[9999];
+        int num, team; //team處理目前艦隊儲存
+        int total,page,lbl1;
+        string[] boat = new string[24]; string[] boat1 = new string[24];
+        Label[] pg;
+        Label[] lbl;
+        bool b1, b2, b3, b4;
+        private void compile_Load(object sender, EventArgs e)
+        {
+            //艦隊檢測歸零
+            b1 = true;
+            b2 = false;
+            b3 = false;
+            b4 = false;
+            team = 1;
+            //獲得所持有艦娘資料
+            OleDbConnection thisConnection = new OleDbConnection(@"Provider=Microsoft.Jet.OLEDB.4.0;Data Source=" + str1 + "/資料庫1.mdb;");
+            thisConnection.Open();//開啟與access建立的連線
+            OleDbCommand thisCommand = thisConnection.CreateCommand();
+            thisCommand.CommandText = "SELECT * FROM 所持有艦娘";
+            OleDbDataReader thisReader1 = thisCommand.ExecuteReader();//建立OleDbDataReader用來存放從Access裡面讀取出來的資料
+            while (thisReader1.Read())
+            {
+                total++;
+            }
+            thisReader1.Close();
+            if (total % 10 > 0) page = (total / 10) + 1;
+            else page = total / 10;
+            pg = new Label[] { label3, label4, label5, label6, label7 };
+            while (page > 0)
+            {
+                pg[num].Enabled = true;
+                num++;
+                page--;
+                if (num >= 5)
+                {
+                    break;
+                }
+            }
+            lbl = new Label[10];
+            for (int i = 0; i <= 9; i++)
+            {
+                lbl[i] = new Label();
+                lbl[i].Location = new Point();//待補位置
+                this.Controls.Add(lbl[i]);
+                lbl[i].DoubleClick += new EventHandler(this.lbl_DoubleClick);
+            }
+
+            //讀取第一艦隊資料
+            thisCommand.CommandText = "SELECT * FROM 艦隊1";
+            OleDbDataReader thisReader2 = thisCommand.ExecuteReader();
+            num = 0;
+            while (thisReader2.Read())
+            {
+                Console.WriteLine("\t{0}\t{1}", thisReader2["姓名"], thisReader2["等級"]);
+                boat1[num] = thisReader2["姓名"].ToString();
+                num++;
+            }
+            if (boat1[0] != "") { pictureBox5.Image = Image.FromFile(str1 + "//艦娘" + "//" + boat1[0] + ".png"); }
+            if (boat1[1] != "") { pictureBox6.Image = Image.FromFile(str1 + "//艦娘" + "//" + boat1[1] + ".png"); }
+            if (boat1[2] != "") { pictureBox7.Image = Image.FromFile(str1 + "//艦娘" + "//" + boat1[2] + ".png"); }
+            if (boat1[3] != "") { pictureBox8.Image = Image.FromFile(str1 + "//艦娘" + "//" + boat1[3] + ".png"); }
+            if (boat1[4] != "") { pictureBox9.Image = Image.FromFile(str1 + "//艦娘" + "//" + boat1[4] + ".png"); }
+            if (boat1[5] != "") { pictureBox10.Image = Image.FromFile(str1 + "//艦娘" + "//" +boat1[5] + ".png"); }
+            thisReader2.Close();
+            thisConnection.Close();
+            
+        }
+
+        private void compile_FormClosed(object sender, FormClosedEventArgs e)
+        {
+            Form1 Form1 = new Form1();
+            this.Visible = false;
+            Form1.Show();
+        }
+         
+        //辨認名子 PICTUREBOX更改圖片 使用過的艦娘不會出現在表中
+        void lbl_DoubleClick(object sender,EventArgs e)
+        {
+            
+
+        }
+ 
+
+        //切換艦隊1
+        private void pictureBox1_Click(object sender, EventArgs e)
+        {
+            if (b1 == false) 
+            {
+                b1 = true;
+                b2 = false;
+                b3 = false;
+                b4 = false;
+                pictureBox1.Image = Image.FromFile(str1 + "//艦隊旗//1.jpg");
+                pictureBox2.Image = Image.FromFile(str1 + "//艦隊旗//2-1.jpg");
+                pictureBox3.Image = Image.FromFile(str1 + "//艦隊旗//3-1.jpg");
+                pictureBox4.Image = Image.FromFile(str1 + "//艦隊旗//4-1.jpg");
+                team = 1;
+                //更新艦隊圖
+                OleDbConnection thisConnection = new OleDbConnection(@"Provider=Microsoft.Jet.OLEDB.4.0;Data Source=" + str1 + "/資料庫1.mdb;");
+                thisConnection.Open();//開啟與access建立的連線
+                OleDbCommand thisCommand = thisConnection.CreateCommand();
+                thisCommand.CommandText = "SELECT * FROM 艦隊1";
+                OleDbDataReader thisReader2 = thisCommand.ExecuteReader();
+                num = 0;
+                while (thisReader2.Read())
+                {
+                    Console.WriteLine("\t{0}\t{1}", thisReader2["姓名"], thisReader2["等級"]);
+                    boat1[num] = thisReader2["姓名"].ToString();
+                    num++;
+                }
+                if (boat1[0] != "") { pictureBox5.Image = Image.FromFile(str1 + "//艦娘" + "//" + boat1[0] + ".png"); }
+                else pictureBox5.Image= null;
+                if (boat1[1] != "") { pictureBox6.Image = Image.FromFile(str1 + "//艦娘" + "//" + boat1[1] + ".png"); }
+                else pictureBox6.Image= null;
+                if (boat1[2] != "") { pictureBox7.Image = Image.FromFile(str1 + "//艦娘" + "//" + boat1[2] + ".png"); }
+                else pictureBox7.Image =null;
+                if (boat1[3] != "") { pictureBox8.Image = Image.FromFile(str1 + "//艦娘" + "//" + boat1[3] + ".png"); }
+                else pictureBox8.Image =null;
+                if (boat1[4] != "") { pictureBox9.Image = Image.FromFile(str1 + "//艦娘" + "//" + boat1[4] + ".png"); }
+                else pictureBox9.Image =null;
+                if (boat1[5] != "") { pictureBox10.Image = Image.FromFile(str1 + "//艦娘" + "//"+ boat1[5] + ".png"); }
+                else pictureBox10.Image= null;
+                thisReader2.Close();
+                thisConnection.Close();
+            }
+        }
+        //切換艦隊2
+        private void pictureBox2_Click(object sender, EventArgs e)
+        {
+            if (b2 == false)
+            {
+                b1 = false;
+                b2 = true;
+                b3 = false;
+                b4 = false;
+                pictureBox1.Image = Image.FromFile(str1 + "//艦隊旗//1-1.jpg");
+                pictureBox2.Image = Image.FromFile(str1 + "//艦隊旗//2.jpg");
+                pictureBox3.Image = Image.FromFile(str1 + "//艦隊旗//3-1.jpg");
+                pictureBox4.Image = Image.FromFile(str1 + "//艦隊旗//4-1.jpg");
+                team = 2;
+                //更新艦隊圖
+                OleDbConnection thisConnection = new OleDbConnection(@"Provider=Microsoft.Jet.OLEDB.4.0;Data Source=" + str1 + "/資料庫1.mdb;");
+                thisConnection.Open();//開啟與access建立的連線
+                OleDbCommand thisCommand = thisConnection.CreateCommand();
+                thisCommand.CommandText = "SELECT * FROM 艦隊2";
+                OleDbDataReader thisReader2 = thisCommand.ExecuteReader();
+                num = 6;
+                while (thisReader2.Read())
+                {
+                    Console.WriteLine("\t{0}\t{1}", thisReader2["姓名"], thisReader2["等級"]);
+                    boat1[num] = thisReader2["姓名"].ToString();
+                    num++;
+                }
+                if (boat1[6] != "") { pictureBox5.Image = Image.FromFile(str1 + "//艦娘" + "//" + boat1[6] + ".png"); }
+                else pictureBox5.Image = null;
+                if (boat1[7] != "") { pictureBox6.Image = Image.FromFile(str1 + "//艦娘" + "//" + boat1[7] + ".png"); }
+                else pictureBox6.Image = null;
+                if (boat1[8] != "") { pictureBox7.Image = Image.FromFile(str1 + "//艦娘" + "//" + boat1[8] + ".png"); }
+                else pictureBox7.Image = null;
+                if (boat1[9] != "") { pictureBox8.Image = Image.FromFile(str1 + "//艦娘" + "//" + boat1[9] + ".png"); }
+                else pictureBox8.Image = null;
+                if (boat1[10] != "") { pictureBox9.Image = Image.FromFile(str1 + "//艦娘" +"//" + boat1[10] + ".png"); }
+                else pictureBox9.Image = null;
+                if (boat1[11] != "") { pictureBox10.Image = Image.FromFile(str1 + "//艦娘" + "//" + boat1[11] + ".png"); }
+                else pictureBox10.Image = null;
+                thisReader2.Close();
+                thisConnection.Close();
+            }
+        }
+        //切換艦隊3
+        private void pictureBox3_Click(object sender, EventArgs e)
+        {
+            if (b3 == false)
+            {
+                b1 = false;
+                b2 = false;
+                b3 = true;
+                b4 = false;
+                pictureBox3.Image = Image.FromFile(str1 + "//艦隊旗//3.jpg");
+                pictureBox2.Image = Image.FromFile(str1 + "//艦隊旗//2-1.jpg");
+                pictureBox1.Image = Image.FromFile(str1 + "//艦隊旗//1-1.jpg");
+                pictureBox4.Image = Image.FromFile(str1 + "//艦隊旗//4-1.jpg");
+                team = 3;
+                //更新艦隊圖
+                OleDbConnection thisConnection = new OleDbConnection(@"Provider=Microsoft.Jet.OLEDB.4.0;Data Source=" + str1 + "/資料庫1.mdb;");
+                thisConnection.Open();//開啟與access建立的連線
+                OleDbCommand thisCommand = thisConnection.CreateCommand();
+                thisCommand.CommandText = "SELECT * FROM 艦隊3";
+                OleDbDataReader thisReader2 = thisCommand.ExecuteReader();
+                num = 12;
+                while (thisReader2.Read())
+                {
+                    Console.WriteLine("\t{0}\t{1}", thisReader2["姓名"], thisReader2["等級"]);
+                    boat1[num] = thisReader2["姓名"].ToString();
+                    num++;
+                }
+                if (boat1[12] != "") { pictureBox5.Image = Image.FromFile(str1 + "//艦娘" + "//" + boat1[12] + ".png"); }
+                else pictureBox5.Image = null;
+                if (boat1[13] != "") { pictureBox6.Image = Image.FromFile(str1 + "//艦娘" + "//" + boat1[13] + ".png"); }
+                else pictureBox6.Image = null;
+                if (boat1[14] != "") { pictureBox7.Image = Image.FromFile(str1 + "//艦娘" + "//" + boat1[14] + ".png"); }
+                else pictureBox7.Image = null;
+                if (boat1[15] != "") { pictureBox8.Image = Image.FromFile(str1 + "//艦娘" + "//" + boat1[15] + ".png"); }
+                else pictureBox8.Image = null;
+                if (boat1[16] != "") { pictureBox9.Image = Image.FromFile(str1 + "//艦娘" + "//" + boat1[16] + ".png"); }
+                else pictureBox9.Image =null;
+                if (boat1[17] != "") { pictureBox10.Image = Image.FromFile(str1 + "//艦娘" +"//" + boat1[17] + ".png"); }
+                else pictureBox10.Image = null;
+                thisReader2.Close();
+                thisConnection.Close();
+            }
+        }
+        //切換艦隊4
+        private void pictureBox4_Click(object sender, EventArgs e)
+        {
+            if (b4 == false)
+            {
+                b1 = false;
+                b2 = false;
+                b3 = false;
+                b4 = true;
+                pictureBox4.Image = Image.FromFile(str1 + "//艦隊旗//4.jpg");
+                pictureBox2.Image = Image.FromFile(str1 + "//艦隊旗//2-1.jpg");
+                pictureBox3.Image = Image.FromFile(str1 + "//艦隊旗//3-1.jpg");
+                pictureBox1.Image = Image.FromFile(str1 + "//艦隊旗//1-1.jpg");
+                team = 4;
+                //更新艦隊圖
+                OleDbConnection thisConnection = new OleDbConnection(@"Provider=Microsoft.Jet.OLEDB.4.0;Data Source=" + str1 + "/資料庫1.mdb;");
+                thisConnection.Open();//開啟與access建立的連線
+                OleDbCommand thisCommand = thisConnection.CreateCommand();
+                thisCommand.CommandText = "SELECT * FROM 艦隊4";
+                OleDbDataReader thisReader2 = thisCommand.ExecuteReader();
+                num = 18;
+                while (thisReader2.Read())
+                {
+                    Console.WriteLine("\t{0}\t{1}", thisReader2["姓名"], thisReader2["等級"]);
+                    boat1[num] = thisReader2["姓名"].ToString();
+                    num++;
+                }
+                if (boat1[18] != "") { pictureBox5.Image = Image.FromFile(str1 + "//艦娘" + "//" + boat1[18] + ".png"); }
+                else pictureBox5.Image = null;
+                if (boat1[19] != "") { pictureBox6.Image = Image.FromFile(str1 + "//艦娘" +"//" + boat1[19] + ".png"); }
+                else pictureBox6.Image = null;
+                if (boat1[20] != "") { pictureBox7.Image = Image.FromFile(str1 + "//艦娘" +"//" + boat1[20] + ".png"); }
+                else pictureBox7.Image = null;
+                if (boat1[21] != "") { pictureBox8.Image = Image.FromFile(str1 + "//艦娘" +"//" + boat1[21] + ".png"); }
+                else pictureBox8.Image = null;
+                if (boat1[22] != "") { pictureBox9.Image = Image.FromFile(str1 + "//艦娘" +"//" + boat1[22] + ".png"); }
+                else pictureBox9.Image = null;
+                if (boat1[23] != "") { pictureBox10.Image = Image.FromFile(str1 + "//艦娘" +"//" + boat1[23] + ".png"); }
+                else pictureBox10.Image =null;
+                thisReader2.Close();
+                thisConnection.Close();
+            }
+        }
+
+
+
+        //以下PICTUREBOX程式碼都要改
+        private void pictureBox5_Click(object sender, EventArgs e)
+        {
+            if(b1 == true)
+            {
+                //顯示圖片
+                String a = comboBox1.Text;
+                pictureBox5.Image = Image.FromFile(str1 + "//艦娘" +"//" + a + ".png");
+                boat[0] = comboBox1.Text;
+                //更新艦隊資料庫
+                OleDbConnection thisConnection = new OleDbConnection(@"Provider=Microsoft.Jet.OLEDB.4.0;Data Source=" + str1 + "/資料庫1.mdb;");
+                thisConnection.Open();//開啟與access建立的連線
+                OleDbCommand thisCommand = thisConnection.CreateCommand();
+                thisCommand.CommandText = "Update 艦隊1 set 姓名 = '" + comboBox1.Text +"' Where 識別碼 = 1";//待加等級
+                thisCommand.ExecuteNonQuery();
+                thisConnection.Close();
+                //OHO凸 去你嬤嬤單引號
+            }
+            if (b2 == true)
+            {
+                //顯示圖片
+                String a = comboBox1.Text;
+                pictureBox5.Image = Image.FromFile(str1 + "//艦娘" +"//" + a + ".png");
+                boat[6] = comboBox1.Text;
+                //更新艦隊資料庫
+                OleDbConnection thisConnection = new OleDbConnection(@"Provider=Microsoft.Jet.OLEDB.4.0;Data Source=" + str1 + "/資料庫1.mdb;");
+                thisConnection.Open();//開啟與access建立的連線
+                OleDbCommand thisCommand = thisConnection.CreateCommand();
+                thisCommand.CommandText = "Update 艦隊2 set 姓名 = '" + comboBox1.Text + "' Where 識別碼 = 1";//待加等級
+                thisCommand.ExecuteNonQuery();
+                thisConnection.Close();
+                //OHO凸 去你嬤嬤單引號
+            }
+            if (b3 == true)
+            {
+                //顯示圖片
+                String a = comboBox1.Text;
+                pictureBox5.Image = Image.FromFile(str1 + "//艦娘"+"//" + a + ".png");
+                boat[12] = comboBox1.Text;
+                //更新艦隊資料庫
+                OleDbConnection thisConnection = new OleDbConnection(@"Provider=Microsoft.Jet.OLEDB.4.0;Data Source=" + str1 + "/資料庫1.mdb;");
+                thisConnection.Open();//開啟與access建立的連線
+                OleDbCommand thisCommand = thisConnection.CreateCommand();
+                thisCommand.CommandText = "Update 艦隊3 set 姓名 = '" + comboBox1.Text + "' Where 識別碼 = 1";//待加等級
+                thisCommand.ExecuteNonQuery();
+                thisConnection.Close();
+                //OHO凸 去你嬤嬤單引號
+            }
+            if (b4 == true)
+            {
+                //顯示圖片
+                String a = comboBox1.Text;
+                pictureBox5.Image = Image.FromFile(str1 + "//艦娘"+"//" + a + ".png");
+                boat[18] = comboBox1.Text;
+                //更新艦隊資料庫
+                OleDbConnection thisConnection = new OleDbConnection(@"Provider=Microsoft.Jet.OLEDB.4.0;Data Source=" + str1 + "/資料庫1.mdb;");
+                thisConnection.Open();//開啟與access建立的連線
+                OleDbCommand thisCommand = thisConnection.CreateCommand();
+                thisCommand.CommandText = "Update 艦隊4 set 姓名 = '" + comboBox1.Text + "' Where 識別碼 = 1";//待加等級
+                thisCommand.ExecuteNonQuery();
+                thisConnection.Close();
+                //OHO凸 去你嬤嬤單引號
+            }
+        }
+
+        private void pictureBox6_Click(object sender, EventArgs e)
+        {
+            if (b1 == true)
+            {
+                //顯示圖片
+                String a = comboBox1.Text;
+                pictureBox6.Image = Image.FromFile(str1 + "//艦娘"+"//" + a + ".png");
+                boat[1] = comboBox1.Text;
+                //更新艦隊資料庫
+                OleDbConnection thisConnection = new OleDbConnection(@"Provider=Microsoft.Jet.OLEDB.4.0;Data Source=" + str1 + "/資料庫1.mdb;");
+                thisConnection.Open();//開啟與access建立的連線
+                OleDbCommand thisCommand = thisConnection.CreateCommand();
+                thisCommand.CommandText = "Update 艦隊1 set 姓名 = '" + comboBox1.Text + "' Where 識別碼 = 2";//待加等級
+                thisCommand.ExecuteNonQuery();
+                thisConnection.Close();
+                //OHO凸 去你嬤嬤單引號
+            }
+            if (b2 == true)
+            {
+                //顯示圖片
+                String a = comboBox1.Text;
+                pictureBox6.Image = Image.FromFile(str1 + "//艦娘" +"//" + a + ".png");
+                boat[7] = comboBox1.Text;
+                //更新艦隊資料庫
+                OleDbConnection thisConnection = new OleDbConnection(@"Provider=Microsoft.Jet.OLEDB.4.0;Data Source=" + str1 + "/資料庫1.mdb;");
+                thisConnection.Open();//開啟與access建立的連線
+                OleDbCommand thisCommand = thisConnection.CreateCommand();
+                thisCommand.CommandText = "Update 艦隊2 set 姓名 = '" + comboBox1.Text + "' Where 識別碼 = 2";//待加等級
+                thisCommand.ExecuteNonQuery();
+                thisConnection.Close();
+                //OHO凸 去你嬤嬤單引號
+            }
+            if (b3 == true)
+            {
+                //顯示圖片
+                String a = comboBox1.Text;
+                pictureBox6.Image = Image.FromFile(str1 + "//艦娘" +"//" + a + ".png");
+                boat[13] = comboBox1.Text;
+                //更新艦隊資料庫
+                OleDbConnection thisConnection = new OleDbConnection(@"Provider=Microsoft.Jet.OLEDB.4.0;Data Source=" + str1 + "/資料庫1.mdb;");
+                thisConnection.Open();//開啟與access建立的連線
+                OleDbCommand thisCommand = thisConnection.CreateCommand();
+                thisCommand.CommandText = "Update 艦隊3 set 姓名 = '" + comboBox1.Text + "' Where 識別碼 = 2";//待加等級
+                thisCommand.ExecuteNonQuery();
+                thisConnection.Close();
+                //OHO凸 去你嬤嬤單引號
+            }
+            if (b4 == true)
+            {
+                //顯示圖片
+                String a = comboBox1.Text;
+                pictureBox6.Image = Image.FromFile(str1 + "//艦娘" +"//" + a + ".png");
+                boat[19] = comboBox1.Text;
+                //更新艦隊資料庫
+                OleDbConnection thisConnection = new OleDbConnection(@"Provider=Microsoft.Jet.OLEDB.4.0;Data Source=" + str1 + "/資料庫1.mdb;");
+                thisConnection.Open();//開啟與access建立的連線
+                OleDbCommand thisCommand = thisConnection.CreateCommand();
+                thisCommand.CommandText = "Update 艦隊4 set 姓名 = '" + comboBox1.Text + "' Where 識別碼 = 2";//待加等級
+                thisCommand.ExecuteNonQuery();
+                thisConnection.Close();
+                //OHO凸 去你嬤嬤單引號
+            }
+        }
+
+        private void pictureBox1_MouseLeave(object sender, EventArgs e)
+        {
+            if(b1==false)
+            {
+                pictureBox1.Image = Image.FromFile(str1 + "//艦隊旗//1-1.jpg");
+            }
+
+        }
+
+        private void pictureBox2_MouseLeave(object sender, EventArgs e)
+        {
+            if (b2 == false)
+            {
+                pictureBox2.Image = Image.FromFile(str1 + "//艦隊旗//2-1.jpg");
+            }
+        }
+
+        private void pictureBox3_MouseLeave(object sender, EventArgs e)
+        {
+            if (b3 == false)
+            {
+                pictureBox3.Image = Image.FromFile(str1 + "//艦隊旗//3-1.jpg");
+            }
+        }
+
+        private void pictureBox4_MouseLeave(object sender, EventArgs e)
+        {
+            if (b4 == false)
+            {
+                pictureBox4.Image = Image.FromFile(str1 + "//艦隊旗//4-1.jpg");
+            }
+        }
+
+        private void pictureBox4_MouseEnter(object sender, EventArgs e)
+        {
+            pictureBox4.Image = Image.FromFile(str1 + "//艦隊旗//4.jpg");
+        }
+
+        private void pictureBox3_MouseEnter(object sender, EventArgs e)
+        {
+            pictureBox3.Image = Image.FromFile(str1 + "//艦隊旗//3.jpg");
+        }
+
+        private void pictureBox2_MouseEnter(object sender, EventArgs e)
+        {
+            pictureBox2.Image = Image.FromFile(str1 + "//艦隊旗//2.jpg");
+        }
+
+        private void pictureBox1_MouseEnter(object sender, EventArgs e)
+        {
+            pictureBox1.Image = Image.FromFile(str1 + "//艦隊旗//1.jpg");
+        }
+
+        private void pictureBox7_Click(object sender, EventArgs e)
+        {
+            if (b1 == true)
+            {
+                //顯示圖片
+                String a = comboBox1.Text;
+                pictureBox7.Image = Image.FromFile(str1 + "//艦娘" +"//" + a + ".png");
+                boat[2] = comboBox1.Text;
+                //更新艦隊資料庫
+                OleDbConnection thisConnection = new OleDbConnection(@"Provider=Microsoft.Jet.OLEDB.4.0;Data Source=" + str1 + "/資料庫1.mdb;");
+                thisConnection.Open();//開啟與access建立的連線
+                OleDbCommand thisCommand = thisConnection.CreateCommand();
+                thisCommand.CommandText = "Update 艦隊1 set 姓名 = '" + comboBox1.Text + "' Where 識別碼 = 3";//待加等級
+                thisCommand.ExecuteNonQuery();
+                thisConnection.Close();
+                //OHO凸 去你嬤嬤單引號
+            }
+            if (b2 == true)
+            {
+                //顯示圖片
+                String a = comboBox1.Text;
+                pictureBox7.Image = Image.FromFile(str1 + "//艦娘" +"//" + a + ".png");
+                boat[8] = comboBox1.Text;
+                //更新艦隊資料庫
+                OleDbConnection thisConnection = new OleDbConnection(@"Provider=Microsoft.Jet.OLEDB.4.0;Data Source=" + str1 + "/資料庫1.mdb;");
+                thisConnection.Open();//開啟與access建立的連線
+                OleDbCommand thisCommand = thisConnection.CreateCommand();
+                thisCommand.CommandText = "Update 艦隊2 set 姓名 = '" + comboBox1.Text + "' Where 識別碼 = 3";//待加等級
+                thisCommand.ExecuteNonQuery();
+                thisConnection.Close();
+                //OHO凸 去你嬤嬤單引號
+            }
+            if (b3 == true)
+            {
+                //顯示圖片
+                String a = comboBox1.Text;
+                pictureBox7.Image = Image.FromFile(str1 + "//艦娘" +"//" + a + ".png");
+                boat[14] = comboBox1.Text;
+                //更新艦隊資料庫
+                OleDbConnection thisConnection = new OleDbConnection(@"Provider=Microsoft.Jet.OLEDB.4.0;Data Source=" + str1 + "/資料庫1.mdb;");
+                thisConnection.Open();//開啟與access建立的連線
+                OleDbCommand thisCommand = thisConnection.CreateCommand();
+                thisCommand.CommandText = "Update 艦隊3 set 姓名 = '" + comboBox1.Text + "' Where 識別碼 = 3";//待加等級
+                thisCommand.ExecuteNonQuery();
+                thisConnection.Close();
+                //OHO凸 去你嬤嬤單引號
+            }
+            if (b4 == true)
+            {
+                //顯示圖片
+                String a = comboBox1.Text;
+                pictureBox7.Image = Image.FromFile(str1 + "//艦娘"+"//" + a + ".png");
+                boat[20] = comboBox1.Text;
+                //更新艦隊資料庫
+                OleDbConnection thisConnection = new OleDbConnection(@"Provider=Microsoft.Jet.OLEDB.4.0;Data Source=" + str1 + "/資料庫1.mdb;");
+                thisConnection.Open();//開啟與access建立的連線
+                OleDbCommand thisCommand = thisConnection.CreateCommand();
+                thisCommand.CommandText = "Update 艦隊4 set 姓名 = '" + comboBox1.Text + "' Where 識別碼 = 3";//待加等級
+                thisCommand.ExecuteNonQuery();
+                thisConnection.Close();
+                //OHO凸 去你嬤嬤單引號
+            }
+        }
+
+        private void pictureBox8_Click(object sender, EventArgs e)
+        {
+            if (b1 == true)
+            {
+                //顯示圖片
+                String a = comboBox1.Text;
+                pictureBox8.Image = Image.FromFile(str1 + "//艦娘" +"//" + a + ".png");
+                boat[3] = comboBox1.Text;
+                //更新艦隊資料庫
+                OleDbConnection thisConnection = new OleDbConnection(@"Provider=Microsoft.Jet.OLEDB.4.0;Data Source=" + str1 + "/資料庫1.mdb;");
+                thisConnection.Open();//開啟與access建立的連線
+                OleDbCommand thisCommand = thisConnection.CreateCommand();
+                thisCommand.CommandText = "Update 艦隊1 set 姓名 = '" + comboBox1.Text + "' Where 識別碼 = 4";//待加等級
+                thisCommand.ExecuteNonQuery();
+                thisConnection.Close();
+                //OHO凸 去你嬤嬤單引號
+            }
+            if (b2 == true)
+            {
+                //顯示圖片
+                String a = comboBox1.Text;
+                pictureBox8.Image = Image.FromFile(str1 + "//艦娘" +"//" + a + ".png");
+                boat[9] = comboBox1.Text;
+                //更新艦隊資料庫
+                OleDbConnection thisConnection = new OleDbConnection(@"Provider=Microsoft.Jet.OLEDB.4.0;Data Source=" + str1 + "/資料庫1.mdb;");
+                thisConnection.Open();//開啟與access建立的連線
+                OleDbCommand thisCommand = thisConnection.CreateCommand();
+                thisCommand.CommandText = "Update 艦隊2 set 姓名 = '" + comboBox1.Text + "' Where 識別碼 = 4";//待加等級
+                thisCommand.ExecuteNonQuery();
+                thisConnection.Close();
+                //OHO凸 去你嬤嬤單引號
+            }
+            if (b3 == true)
+            {
+                //顯示圖片
+                String a = comboBox1.Text;
+                pictureBox8.Image = Image.FromFile(str1 + "//艦娘" +"//" + a + ".png");
+                boat[15] = comboBox1.Text;
+                //更新艦隊資料庫
+                OleDbConnection thisConnection = new OleDbConnection(@"Provider=Microsoft.Jet.OLEDB.4.0;Data Source=" + str1 + "/資料庫1.mdb;");
+                thisConnection.Open();//開啟與access建立的連線
+                OleDbCommand thisCommand = thisConnection.CreateCommand();
+                thisCommand.CommandText = "Update 艦隊3 set 姓名 = '" + comboBox1.Text + "' Where 識別碼 = 4";//待加等級
+                thisCommand.ExecuteNonQuery();
+                thisConnection.Close();
+                //OHO凸 去你嬤嬤單引號
+            }
+            if (b4 == true)
+            {
+                //顯示圖片
+                String a = comboBox1.Text;
+                pictureBox8.Image = Image.FromFile(str1 + "//艦娘" +"//" + a + ".png");
+                boat[21] = comboBox1.Text;
+                //更新艦隊資料庫
+                OleDbConnection thisConnection = new OleDbConnection(@"Provider=Microsoft.Jet.OLEDB.4.0;Data Source=" + str1 + "/資料庫1.mdb;");
+                thisConnection.Open();//開啟與access建立的連線
+                OleDbCommand thisCommand = thisConnection.CreateCommand();
+                thisCommand.CommandText = "Update 艦隊4 set 姓名 = '" + comboBox1.Text + "' Where 識別碼 = 4";//待加等級
+                thisCommand.ExecuteNonQuery();
+                thisConnection.Close();
+                //OHO凸 去你嬤嬤單引號
+            }
+        }
+
+        private void pictureBox9_Click(object sender, EventArgs e)
+        {
+            if (b1 == true)
+            {
+                //顯示圖片
+                String a = comboBox1.Text;
+                pictureBox9.Image = Image.FromFile(str1 + "//艦娘" +"//" + a + ".png");
+                boat[4] = comboBox1.Text;
+                //更新艦隊資料庫
+                OleDbConnection thisConnection = new OleDbConnection(@"Provider=Microsoft.Jet.OLEDB.4.0;Data Source=" + str1 + "/資料庫1.mdb;");
+                thisConnection.Open();//開啟與access建立的連線
+                OleDbCommand thisCommand = thisConnection.CreateCommand();
+                thisCommand.CommandText = "Update 艦隊1 set 姓名 = '" + comboBox1.Text + "' Where 識別碼 = 5";//待加等級
+                thisCommand.ExecuteNonQuery();
+                thisConnection.Close();
+                //OHO凸 去你嬤嬤單引號
+            }
+            if (b2 == true)
+            {
+                //顯示圖片
+                String a = comboBox1.Text;
+                pictureBox9.Image = Image.FromFile(str1 + "//艦娘" +"//" + a + ".png");
+                boat[10] = comboBox1.Text;
+                //更新艦隊資料庫
+                OleDbConnection thisConnection = new OleDbConnection(@"Provider=Microsoft.Jet.OLEDB.4.0;Data Source=" + str1 + "/資料庫1.mdb;");
+                thisConnection.Open();//開啟與access建立的連線
+                OleDbCommand thisCommand = thisConnection.CreateCommand();
+                thisCommand.CommandText = "Update 艦隊2 set 姓名 = '" + comboBox1.Text + "' Where 識別碼 = 5";//待加等級
+                thisCommand.ExecuteNonQuery();
+                thisConnection.Close();
+                //OHO凸 去你嬤嬤單引號
+            }
+            if (b3 == true)
+            {
+                //顯示圖片
+                String a = comboBox1.Text;
+                pictureBox9.Image = Image.FromFile(str1 + "//艦娘" +"//" + a + ".png");
+                boat[16] = comboBox1.Text;
+                //更新艦隊資料庫
+                OleDbConnection thisConnection = new OleDbConnection(@"Provider=Microsoft.Jet.OLEDB.4.0;Data Source=" + str1 + "/資料庫1.mdb;");
+                thisConnection.Open();//開啟與access建立的連線
+                OleDbCommand thisCommand = thisConnection.CreateCommand();
+                thisCommand.CommandText = "Update 艦隊3 set 姓名 = '" + comboBox1.Text + "' Where 識別碼 = 5";//待加等級
+                thisCommand.ExecuteNonQuery();
+                thisConnection.Close();
+                //OHO凸 去你嬤嬤單引號
+            }
+            if (b4 == true)
+            {
+                //顯示圖片
+                String a = comboBox1.Text;
+                pictureBox9.Image = Image.FromFile(str1 + "//艦娘" +"//" + a + ".png");
+                boat[22] = comboBox1.Text;
+                //更新艦隊資料庫
+                OleDbConnection thisConnection = new OleDbConnection(@"Provider=Microsoft.Jet.OLEDB.4.0;Data Source=" + str1 + "/資料庫1.mdb;");
+                thisConnection.Open();//開啟與access建立的連線
+                OleDbCommand thisCommand = thisConnection.CreateCommand();
+                thisCommand.CommandText = "Update 艦隊4 set 姓名 = '" + comboBox1.Text + "' Where 識別碼 = 5";//待加等級
+                thisCommand.ExecuteNonQuery();
+                thisConnection.Close();
+                //OHO凸 去你嬤嬤單引號
+            }
+        }
+
+        private void pictureBox10_Click(object sender, EventArgs e)
+        {
+            if (b1 == true)
+            {
+                //顯示圖片
+                String a = comboBox1.Text;
+                pictureBox10.Image = Image.FromFile(str1 + "//艦娘" +"//" + a + ".png");
+                boat[5] = comboBox1.Text;
+                //更新艦隊資料庫
+                OleDbConnection thisConnection = new OleDbConnection(@"Provider=Microsoft.Jet.OLEDB.4.0;Data Source=" + str1 + "/資料庫1.mdb;");
+                thisConnection.Open();//開啟與access建立的連線
+                OleDbCommand thisCommand = thisConnection.CreateCommand();
+                thisCommand.CommandText = "Update 艦隊1 set 姓名 = '" + comboBox1.Text + "' Where 識別碼 = 6";//待加等級
+                thisCommand.ExecuteNonQuery();
+                thisConnection.Close();
+                //OHO凸 去你嬤嬤單引號
+            }
+            if (b2 == true)
+            {
+                //顯示圖片
+                String a = comboBox1.Text;
+                pictureBox10.Image = Image.FromFile(str1 + "//艦娘" +"//" + a + ".png");
+                boat[11] = comboBox1.Text;
+                //更新艦隊資料庫
+                OleDbConnection thisConnection = new OleDbConnection(@"Provider=Microsoft.Jet.OLEDB.4.0;Data Source=" + str1 + "/資料庫1.mdb;");
+                thisConnection.Open();//開啟與access建立的連線
+                OleDbCommand thisCommand = thisConnection.CreateCommand();
+                thisCommand.CommandText = "Update 艦隊2 set 姓名 = '" + comboBox1.Text + "' Where 識別碼 = 6";//待加等級
+                thisCommand.ExecuteNonQuery();
+                thisConnection.Close();
+                //OHO凸 去你嬤嬤單引號
+            }
+            if (b3 == true)
+            {
+                //顯示圖片
+                String a = comboBox1.Text;
+                pictureBox10.Image = Image.FromFile(str1 + "//艦娘" +"//" + a + ".png");
+                boat[17] = comboBox1.Text;
+                //更新艦隊資料庫
+                OleDbConnection thisConnection = new OleDbConnection(@"Provider=Microsoft.Jet.OLEDB.4.0;Data Source=" + str1 + "/資料庫1.mdb;");
+                thisConnection.Open();//開啟與access建立的連線
+                OleDbCommand thisCommand = thisConnection.CreateCommand();
+                thisCommand.CommandText = "Update 艦隊3 set 姓名 = '" + comboBox1.Text + "' Where 識別碼 = 6";//待加等級
+                thisCommand.ExecuteNonQuery();
+                thisConnection.Close();
+                //OHO凸 去你嬤嬤單引號
+            }
+            if (b4 == true)
+            {
+                //顯示圖片
+                String a = comboBox1.Text;
+                pictureBox10.Image = Image.FromFile(str1 + "//艦娘" +"//" + a + ".png");
+                boat[23] = comboBox1.Text;
+                //更新艦隊資料庫
+                OleDbConnection thisConnection = new OleDbConnection(@"Provider=Microsoft.Jet.OLEDB.4.0;Data Source=" + str1 + "/資料庫1.mdb;");
+                thisConnection.Open();//開啟與access建立的連線
+                OleDbCommand thisCommand = thisConnection.CreateCommand();
+                thisCommand.CommandText = "Update 艦隊4 set 姓名 = '" + comboBox1.Text + "' Where 識別碼 = 6";//待加等級
+                thisCommand.ExecuteNonQuery();
+                thisConnection.Close();
+                //OHO凸 去你嬤嬤單引號
+            }
+        }
+
+
+    }
+}
